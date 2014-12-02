@@ -1,12 +1,12 @@
 <?php
 
-namespace Xiris;
+namespace XirisApps;
 
 /**
- * Class NoFundsException
+ * Class CashMachineException
  *
- * @package     Xiris
- * @author      Christopher Silva
+ * @package XirisApps
+ * @author  Christopher Silva
  */
 class CashMachineException extends \Exception{}
 
@@ -15,18 +15,20 @@ class CashMachineException extends \Exception{}
  * Class ValidateMoney
  *  Just an example of validation class
  *
- * @package Xiris
+ * @package XirisApps
  * @author  Christopher Silva
  */
 class ValidateMoney
 {
-    const VALIDATE_INTEGER = true;
+    const VALIDATE_INTEGER = false;
     const VALIDATE_EMPTY   = true;
 
-    public function __construct($money)
+    public static function validate($money)
     {
-        if (self::VALIDATE_EMPTY && empty($value))
+        if (self::VALIDATE_EMPTY && empty($money))
             throw new CashMachineException('Please type some value, ok?');
+
+        return true;
     }
 }
 
@@ -44,20 +46,37 @@ class CashMachine
      * @access  private
      */
     private $availableNotes = [10, 20, 50, 100];
+    private $countNotes     = [];
 
-    public static function getNotesByValue($value)
+    public function getNotesByValue($value)
     {
-        if (empty($value))
+        $validate = \XirisApps\ValidateMoney::validate($value);
 
-
-        if (!is_int($value))
-            throw new CashMachineExceptions('Type only integer values.');
-
-        if ()
-
+        if (in_array($value, $this->getAvailableNotes())) {
+            return $value;
+        }
     }
 
-    private function
+    /**
+     * @param $key
+     * @param $value
+     */
+    public function setCountNotes($key, $value)
+    {
+        $this->countNotes[$key] += $value;
+    }
+
+    /**
+     * @param   null $key
+     * @return  array
+     */
+    public function getCountNotes($key = null)
+    {
+        if (is_null($key))
+            return $this->countNotes;
+
+        return $this->countNotes[$key];
+    }
 
     /**
      * @return  array
@@ -66,8 +85,8 @@ class CashMachine
     {
         return $this->availableNotes;
     }
-
 }
+
 
 
 /**
@@ -88,10 +107,11 @@ $cashMachine = new CashMachine();
 
 // write input back
 if (!empty($money)) {
-    $cashMachine->getNotesByValue($money);
-    fwrite(STDOUT, "- Ohh God, \${$money} bucks");
+    // casting money, i dont want to have problems =/
+    $moneyback = $cashMachine->getNotesByValue((int)$money);
+    fwrite(STDOUT, "- Ohh God, \${$moneyback} bucks");
 } else {
-    echo "- I think you dont have money, han? =/";
+    fwrite(STDOUT, "- I think you dont have money, han? =/");
 }
 
-echo "\n\nThanks to use and abuse! :D";
+fwrite(STDOUT, "\n\nThanks to use and abuse! :D");
